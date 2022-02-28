@@ -1,0 +1,158 @@
+<mjml>
+	<mj-body background-color="#FFF">
+		<mj-container>
+			<mj-section background-color="#101939">
+				<mj-column>
+					<mj-image
+						src="logo_pnj.png"
+						alt="Logo SMIL"
+						align="center"
+						border="none"
+						width="100px"
+					/>
+					<mj-text
+						color="#fff"
+						font-size="20px"
+						font-family="Assistant, Helvetica, Arial, sans-serif"
+						align="center"
+						line-height="32px"
+						font-weight="semi-bold"
+					>
+						Laboratorium Teknik Informatika dan Komputer <br />
+						Politeknik Negeri Jakarta
+					</mj-text>
+				</mj-column>
+			</mj-section>
+
+			<mj-section
+				background-color="#FFFFFF"
+				padding-bottom="0px"
+				padding-top="0px"
+				padding-left="0px"
+				border-left="1px solid #101939"
+				border-right="1px solid #101939"
+			>
+				<mj-column vertical-align="top" width="100%">
+					<mj-text
+						align="left"
+						color="#000"
+						font-size="14px"
+						font-weight="bold"
+						font-family="Arial"
+						padding-top="50px"
+					>
+						Selamat, Muhammad Rafly Sadewa
+					</mj-text>
+					<mj-text
+						align="left"
+						color="#000"
+						font-size="14px"
+						font-family="Arial"
+						padding-top="20px"
+						line-height="25px"
+					>
+						Anda telah berhasil melakukan booking peminjaman alat pada
+						<span style="font-weight: bold">Minggu, 13 Juni 2021</span> dengan
+						keterangan sebagai berikut :
+					</mj-text>
+				</mj-column>
+
+				<mj-column
+					vertical-align="middle"
+					width="100%"
+					border-bottom="1px dashed #eee"
+					padding-bottom="25px"
+				>
+					<mj-table
+						align="left"
+						color="#071C4D"
+						line-height="28px"
+						font-size="16px"
+						font-family="Assistant, Helvetica, Arial, sans-serif"
+						padding-left="25px"
+						padding-right="25px"
+					>
+						<tr>
+							<td>
+								<strong>ID Peminjaman</strong>
+							</td>
+						</tr>
+						<tr>
+							<td>1</td>
+						</tr>
+						<tr>
+							<td>
+								<strong>Waktu Pengembalian</strong>
+							</td>
+						</tr>
+						<tr>
+							<td>Rabu, 30 Juni 2021</td>
+						</tr>
+
+						<tr>
+							<td>
+								<strong>Dosen Penanggung Jawab</strong>
+							</td>
+						</tr>
+						<tr>
+							<td>3271032506990001 - Muhammad Rafly Sadewa</td>
+						</tr>
+
+						<tr>
+							<td>
+								<strong>Daftar Alat Dipinjam: </strong>
+							</td>
+						</tr>
+
+						<tr>
+							<td>
+								<span style="padding-right: 10px">1.</span>
+								ASUS A412 DA
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span style="padding-right: 10px">2.</span>
+								POCO X3 PRO
+							</td>
+						</tr>
+					</mj-table>
+				</mj-column>
+
+				<mj-column vertical-align="top" width="100%">
+					<mj-text
+						align="left"
+						color="#000"
+						font-size="14px"
+						font-family="Arial"
+						line-height="25px"
+					>
+						Perlihatkan email ini kepada staff laboratorium pada saat
+						pengambilan alat.
+					</mj-text>
+					<mj-text
+						align="left"
+						color="#000"
+						font-size="14px"
+						font-weight="bold"
+						font-family="Arial"
+						padding-top="40px"
+					>
+						Terima Kasih
+					</mj-text>
+					<mj-text
+						align="left"
+						color="#000"
+						font-size="14px"
+						font-weight="bold"
+						font-family="Arial"
+						padding-top="80px"
+						padding-bottom="52px"
+					>
+						Laboratorium Teknik Informatika dan Komputer
+					</mj-text>
+				</mj-column>
+			</mj-section>
+		</mj-container>
+	</mj-body>
+</mjml>

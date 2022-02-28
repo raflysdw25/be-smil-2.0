@@ -1,0 +1,110 @@
+<mjml>
+	<mj-body background-color="#FFF">
+		<mj-container>
+			<mj-section background-color="#101939">
+				<mj-column>
+					<mj-image
+						src="logo_pnj.png"
+						alt="Logo SMIL"
+						align="center"
+						border="none"
+						width="100px"
+					/>
+					<mj-text
+						color="#fff"
+						font-size="20px"
+						font-family="Assistant, Helvetica, Arial, sans-serif"
+						align="center"
+						line-height="32px"
+						font-weight="semi-bold"
+					>
+						Laboratorium Teknik Informatika dan Komputer <br />
+						Politeknik Negeri Jakarta
+					</mj-text>
+				</mj-column>
+			</mj-section>
+
+			<mj-section
+				background-color="#FFFFFF"
+				vertical-align="top"
+				padding-bottom="0px"
+				padding-top="0px"
+				padding-left="0px"
+			>
+				<mj-column vertical-align="top" width="100%">
+					<mj-text
+						align="left"
+						color="#000"
+						font-size="14px"
+						font-weight="bold"
+						font-family="Arial"
+						padding-top="50px"
+					>
+						Selamat, Muhammad Rafly Sadewa
+					</mj-text>
+				</mj-column>
+
+				<mj-column vertical-align="top" width="100%">
+					<mj-text
+						align="left"
+						color="#000"
+						font-size="14px"
+						font-family="Arial"
+						padding-top="20px"
+						line-height="25px"
+					>
+						Anda telah
+						<span style="text-transform: uppercase; font-weight: bold"
+							>berhasil</span
+						>
+						terdaftar pada sistem ini.
+						<br />
+						Untuk menggunakan fitur yang tersedia pada sistem ini, silahkan
+						lakukan verifikasi email anda melalui link dibawah ini
+					</mj-text>
+				</mj-column>
+
+				<mj-column
+					vertical-align="middle"
+					width="100%"
+					padding-bottom="15px"
+					padding-top="15px"
+				>
+					<mj-button
+						align="left"
+						font-size="14px"
+						background-color="#101939"
+						border-radius="4px"
+						color="#fff"
+						font-family="Assistant, Helvetica, Arial, sans-serif"
+					>
+						Verifikasi Email
+					</mj-button>
+				</mj-column>
+				
+				<mj-column vertical-align="top" width="100%">
+					<mj-text
+						align="left"
+						color="#000"
+						font-size="14px"
+						font-weight="bold"
+						font-family="Arial"
+						padding-top="40px"
+					>
+						Terima Kasih
+					</mj-text>
+					<mj-text
+						align="left"
+						color="#000"
+						font-size="14px"
+						font-weight="bold"
+						font-family="Arial"
+						padding-top="80px"
+						padding-bottom="52px"
+					>
+						Laboratorium Teknik Informatika dan Komputer
+					</mj-text>
+			</mj-section>			
+		</mj-container>
+	</mj-body>
+</mjml>

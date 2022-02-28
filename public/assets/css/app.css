@@ -1,0 +1,35 @@
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  height: 100vh;
+}
+
+#data-user-verified {
+  position: relative;
+  top: 30%;
+}
+
+#data-user-verified .verified {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+#data-user-verified .btn-new-primary {
+  color: #fff;
+  background-color: #101939;
+  border-color: #101939;
+}
+
+.title-new {
+  color: #101939;
+  font-weight: 700;
+}
+/*# sourceMappingURL=app.css.map */
