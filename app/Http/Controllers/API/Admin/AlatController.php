@@ -98,7 +98,7 @@ class AlatController extends Controller
      *     security={ {"bearerAuth": {} }},
      *     @OA\RequestBody(
      *          required=false,
-     *          @OA\JsonContent(ref="#/components/schemas/FilterAlatRequest") 
+     *          @OA\JsonContent(ref="#/components/schemas/FilterAlatRequest"), 
      *     ),
      *     @OA\Response(
      *          response="200", 
@@ -132,21 +132,25 @@ class AlatController extends Controller
         // Filter: Nama Alat, Jenis Alat, Asal Pengadaan, Tahun Pengadaan
         $alat = Alat::with(['jenis_alat_model', 'asal_pengadaan_model', 'satuan_jumlah_model', 'images'])->orderBy($sortBy, $sortDirection);
 
-        if($request->has('alat_name') && $request->alat_name !== ''){
+        if($request->has('alat_name') && $request->alat_name != ''){
             $alat->where('alat_name', 'ilike', '%'.$request->alat_name.'%');
         }
         
-        if($request->has('jenis_alat_id') && $request->jenis_alat_id !== null){
+        if($request->has('jenis_alat_id') && $request->jenis_alat_id != null){
             $alat->where('jenis_alat_id', '=', $request->jenis_alat_id);
         }
         
-        if($request->has('asal_pengadaan_id') && $request->asal_pengadaan_id !== null){
+        if($request->has('asal_pengadaan_id') && $request->asal_pengadaan_id != null){
             $alat->where('asal_pengadaan_id', '=', $request->asal_pengadaan_id);
 
         }
         
-        if($request->has('alat_year') && $request->alat_year !== ''){
+        if($request->has('alat_year') && $request->alat_year != ''){
             $alat->where('alat_year', 'ilike', '%'.$request->alat_year.'%');
+        }
+        if($request->has('can_borrowed') && $request->can_borrowed != null){
+            $canBorrowed = $request->can_borrowed == 1 ? true : false;
+            $alat->where('can_borrowed', '=', $canBorrowed);
         }
         
         
@@ -417,6 +421,7 @@ class AlatController extends Controller
             "alat_specs" => $request->alat_specs,
             "satuan_id" => $request->satuan_id,
             "habis_pakai" => $request->habis_pakai,
+            "can_borrowed" => $request->can_borrowed,
         ]);
 
         if($alat){

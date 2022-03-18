@@ -446,9 +446,9 @@ class StaffLaboratoriumController extends Controller
             'email' => ['email'],
             'fullname' => ['string'], 
             'phone_number' => ['string'],
-            'address' => ['string'],
+            'address' => ['string', 'nullable'],
             'prodi_id' => ['numeric', 'nullable', 'exists:App\Models\Prodi,id'],
-            'image_data' => ['string'],
+            'image_data' => ['string', 'nullable'],
         ]);        
 
         if($validator->fails()){
@@ -463,11 +463,7 @@ class StaffLaboratoriumController extends Controller
 
         // Pengembangan Lanjutan: Cek berdasarkan NIM atau NIP apakah null untuk menentukan update data
 
-        $staff = Staff::find($user->nip);
-
-        if($staff == null){
-            return ResponseFormatter::error(null, 'Staff tidak ditemukan', 404);
-        }
+        
 
         try {
             $user->update([
@@ -475,7 +471,7 @@ class StaffLaboratoriumController extends Controller
                 'image_data' => $request->image_data
             ]);
     
-            $staff->update([
+            $user->staff_user->update([
                 'email' => $request->email,
                 'staff_fullname' => $request->fullname,
                 'phone_number' => $request->phone_number,

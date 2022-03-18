@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use App\Mail\UserVerification;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 // Email Confirmation
 use Illuminate\Support\Facades\Mail;
@@ -48,7 +49,7 @@ use App\Http\Resources\BookingPengembalianCollection;
 class UserAccountController extends Controller
 {
     public function __construct(){
-        $this->middleware(['auth', 'api']);
+        $this->middleware(['auth:api', 'isPeminjam']);
     }
 
     /**
@@ -100,27 +101,19 @@ class UserAccountController extends Controller
             'email' => ['email'],
             'fullname' => ['string'], 
             'phone_number' => ['string'],
-            'address' => ['string'],
-            'prodi_id' => ['numeric', 'exist:App\Models\Prodi,id'],
-            'image_data' => ['string'],
+            'address' => ['string', 'nullable'],
+            'prodi_id' => ['numeric', 'nullable', 'exists:App\Models\Prodi,id'],
+            'image_data' => ['string', 'nullable'],
         ]);        
 
         if($validator->fails()){
             return ResponseFormatter::error(null, $validator->errors(), 400);
         }
 
-        $user = User::find($request->id);
+        $user = User::with(['jabatan_user', 'staff_user', 'mahasiswa_user'])->find($request->id);
 
         if($user == null){
             return ResponseFormatter::error(null, 'User tidak ditemukan', 404);
-        }
-
-        // Pengembangan Lanjutan: Cek berdasarkan NIM atau NIP apakah null untuk menentukan update data
-
-        $userPeminjam = $user->nip === null || $user->nip === '' ? Mahasiswa::find($user->nim) : Staff::find($user->nip);
-
-        if($userPeminjam == null){
-            return ResponseFormatter::error(null, 'Staff tidak ditemukan', 404);
         }
 
         try {
@@ -130,7 +123,7 @@ class UserAccountController extends Controller
             ]);
             
             if($user->nip === null || $user->nip === ''){
-                $userPeminjam->update([
+                $user->mahasiswa_user->update([
                     'email' => $request->email,
                     'mahasiswa_fullname' => $request->fullname,
                     'phone_number' => $request->phone_number,
@@ -138,7 +131,7 @@ class UserAccountController extends Controller
                     'prodi_id' => $request->prodi_id
                 ]);
             }else{
-                $userPeminjam->update([
+                $user->staff_user->update([
                     'email' => $request->email,
                     'staff_fullname' => $request->fullname,
                     'phone_number' => $request->phone_number,
@@ -146,13 +139,25 @@ class UserAccountController extends Controller
                     'prodi_id' => $request->prodi_id
                 ]);
             }
-    
+
             return ResponseFormatter::success($user, 'Data user berhasil diperbarui', 200);
+            
             
         } catch (\Illuminate\Database\QueryException $e) {
             return ResponseFormatter::error(null, $e, 500);
         }
 
+    }
+
+    public function getImagePeminjam($id)
+    {        
+
+        $user = User::find($id);
+        if($user == null){
+            return ResponseFormatter::error(null, 'User tidak ditemukan', 404);
+        }
+
+        return ResponseFormatter::success(["image_data" => $user->image_data], 'User berhasil didapatkan', 200);
     }
 
 
@@ -196,30 +201,66 @@ class UserAccountController extends Controller
         $sortBy = $request->input('sort_by', 'id');
         $sortDirection = $request->input('sort_direction', 'ASC');
 
+
+        $validator = Validator::make($request->all(), [
+            "nomor_induk" => "required|string",
+            "is_mahasiswa" => "required|boolean"
+        ]);
+
+        if($validator->fails()){
+            return ResponseFormatter::error(null, $validator->errors(), 400);
+        }
+
         // Filter: Nama Alat, Jenis Alat, Asal Pengadaan, Tahun Pengadaan
-        $bookingPengembalian = BookingPengembalian::with(['peminjaman_need_pengembalian', 'booking_by_mahasiswa', 'booking_by_staff'])->orderBy($sortBy, $sortDirection)->where('nim_mahasiswa', 'ilike','%'.$request->nomor_induk.'%')->orWhere('nip_staff', 'ilike', '%'.$request->nomor_induk.'%');
+        $bookingPengembalian = BookingPengembalian::with(['peminjaman_need_pengembalian', 'booking_by_mahasiswa', 'booking_by_staff'])->orderBy($sortBy, $sortDirection);
+
+
+        if($request->is_mahasiswa == false){
+            $bookingPengembalian->where('nip_staff', '=', $request->nomor_induk);
+        }else{
+            $bookingPengembalian->where('nim_mahasiswa', '=', $request->nomor_induk);
+        }
 
         if($request->has('appointment_date') && $request->appointment_date != null){
             $bookingPengembalian->where('appointment_date', '=', $request->appointment_date);
         }        
 
-        if($request->has('booking_notes')){
+        if($request->has('booking_notes') && $request->booking_notes != ''){
             $bookingPengembalian->where('booking_notes', 'ilike', '%'.$request->booking_notes.'%');
         }
         
-        if($request->has('is_booking_cancel') && $request->is_booking_cancel !== ''){
-            $bookingPengembalian->where('is_booking_cancel', '=', $request->is_booking_cancel);
+        if($request->has('is_booking_cancel') && $request->is_booking_cancel != ''){
+            if($request->is_booking_cancel != 0){
+                $isBookingCancel = $request->is_booking_cancel === 1 ? false : true;
+                $bookingPengembalian->where('is_booking_cancel', '=', $isBookingCancel);
+            }else{
+                $bookingPengembalian->whereNull('is_booking_cancel');
+            }
         }
 
-        if($request->has('process_by')){
+        if($request->has('process_by') && $request->process_by != ''){
             $bookingPengembalian->where('process_by', 'ilike', '%'.$request->process_by.'%');
         }
         
         
                 
-        $collection = new BookingPengembalianCollection($bookingPengembalian->get());
+        $collection = new BookingPengembalianCollection($bookingPengembalian->paginate($paginate));
 
         return $collection;
+    }
+
+    public function getReadyReturnPeminjaman(Request $request){
+        $validator = Validator::make($request->all(), [
+            "nomor_induk" => "required|string",
+            "is_mahasiswa" => "required|boolean",
+            "pjm_status" => "required|numeric"
+        ]);
+
+        if($validator->fails()){
+            return ResponseFormatter::error(null, $validator->errors(), 400);
+        }
+
+        
     }
 
     /**
@@ -285,19 +326,26 @@ class UserAccountController extends Controller
                     'is_booking_cancel' => null,
                     'booking_notes' => $request->booking_notes ,                
                 ]);            
+                return ResponseFormatter::success($bookingPengembalian, 'Booking Pengembalian berhasil dibuat', 201);
             }else{
-                $bookingPengembalian = BookingPengembalian::find($request->id);
+                $bookingPengembalian = BookingPengembalian::find($request->booking_id);
+                $role = $request->is_mahasiswa == true ? 'Mahasiswa' : 'Staff Jurusan';
+                $fullname = $request->is_mahasiswa == true ? Auth::user()->mahasiswa_user->mahasiswa_fullname : Auth::user()->staff_user->staff_fullname;
+                $process_by = $request->is_booking_cancel == true ? $fullname.' '.'('.$role.')'  : $bookingPengembalian->process_by;
                 $bookingPengembalian->update([
                     'appointment_date' => $request->appointment_date ,
                     'nim_mahasiswa' => $request->nim_mahasiswa ,
                     'nip_staff' => $request->nip_staff ,
                     'peminjaman_id' => $request->peminjaman_id ,
                     'is_booking_cancel' => $request->is_booking_cancel ,
-                    'booking_notes' => $request->booking_notes,                
+                    'booking_notes' => $request->booking_notes,
+                    'process_by' => $process_by,             
                 ]);
+                $successWording = $request->is_booking_cancel == true ? 'Booking Pengembalian berhasil dibatalkan' : 'Booking Pengembalian berhasil diubah';
+                return ResponseFormatter::success($bookingPengembalian, $successWording, 200);
             }
             
-            return ResponseFormatter::success($bookingPengembalian, 'Booking Pengembalian berhasil dibuat', 200);
+            
         } catch (\Illuminate\Database\QueryException $e) {
             return ResponseFormatter::error(null, $e, 403);
         }

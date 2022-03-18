@@ -128,6 +128,7 @@ Route::group(['middleware' => ['api', 'isPeminjam'], 'prefix' => 'peminjaman', '
     Route::put('/update-profile/{id}', 'UserAccountController@updateUserProfile')->name('peminjam.update-profile-peminjam');
     Route::post('/get-booking-pengembalian', 'UserAccountController@getBookingPengembalian')->name('peminjam.get-booking-pengembalian');
     Route::post('/submit-booking-pengembalian', 'UserAccountController@submitBookingPengembalian')->name('peminjam.submit-booking-pengembalian');
+    Route::get('peminjam/get-image/{id}', 'UserAccountController@getImagePeminjam')->name('peminjam.get-image');
 
     // UNUSED ROUTE
     Route::post('/cek-pelapor', 'BuatLaporanController@confirmPeminjam')->name('peminjam.cek-pelapor');

@@ -143,8 +143,14 @@ class BookingPengembalianController extends Controller
             $bookingPengembalian->where('booking_notes', 'ilike', '%'.$request->booking_notes.'%');
         }
         
-        if($request->has('is_booking_cancel') && $request->is_booking_cancel !== ''){
-            $bookingPengembalian->where('is_booking_cancel', '=', $request->is_booking_cancel);
+        if($request->has('is_booking_cancel') && $request->is_booking_cancel != ''){
+            // $bookingPengembalian->where('is_booking_cancel', '=', $request->is_booking_cancel);
+            if($request->is_booking_cancel != 0){
+                $isBookingCancel = $request->is_booking_cancel == 1 ? false : true;
+                $bookingPengembalian->where('is_booking_cancel', '=', $isBookingCancel);
+            }else{
+                $bookingPengembalian->whereNull('is_booking_cancel');
+            }
         }
 
         if($request->has('process_by')&& $request->process_by != ''){
@@ -287,12 +293,12 @@ class BookingPengembalianController extends Controller
 
         $validator = Validator::make($request->all(),[
             'appointment_date' => ['required', 'date'],
-            'nim_mahasiswa' => ['string', 'exists:App\Models\Mahasiswa,nim'],
-            'nip_staff' => ['string', 'exists:App\Models\Staff,nip'],
+            'nim_mahasiswa' => ['string','nullable','exists:App\Models\Mahasiswa,nim'],
+            'nip_staff' => ['string','nullable','exists:App\Models\Staff,nip'],
             'peminjaman_id' => ['numeric', 'nullable', 'exists:App\Models\Peminjaman,id'],
             'is_booking_cancel' => ['required','boolean'],
-            'booking_notes' => ['string'],
-            'process_by' => ['string'],
+            'booking_notes' => ['string', 'nullable'],
+            'process_by' => ['required','string'],
         ]);
 
         if($validator->fails()){

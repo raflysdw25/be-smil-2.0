@@ -13,10 +13,12 @@ use Illuminate\Support\Str;
 use Mail; 
 use App\Mail\UserVerification;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 // Model
 use App\Models\Peminjaman;
 use App\Models\DetailAlat;
+use App\Models\LogPeminjaman;
 
 
 // Resource
@@ -68,7 +70,7 @@ class PengembalianAlatController extends Controller
     public function getReturnedPeminjaman(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "nomor_induk" => "required|string"
+            "nomor_induk" => "required|string",            
         ]);
 
         if($validator->fails()){
@@ -76,7 +78,7 @@ class PengembalianAlatController extends Controller
         }
 
         // Untuk mendapatkan peminjaman dengan status 4 (belum kembali) dengan prioritas tipe peminjaman short, jika tidak ada lalu long
-        $returnedPeminjaman = Peminjaman::with(['detail_peminjaman_model.barcode_alat_pinjam.alat_model', 'staff_peminjam_model', 'mahasiswa_peminjam_model', 'staff_in_charge_model', 'ruangan_model'])->orderBy('created_at', 'DESC')
+        $returnedPeminjaman = Peminjaman::with(['mahasiswa_peminjam_model', 'staff_peminjam_model', 'staff_in_charge_model', 'ruangan_model', 'detail_peminjaman_model.barcode_alat_pinjam.alat_model', 'detail_peminjaman_model.alat_pinjam'])->orderBy('created_at', 'DESC')
             ->orderByRaw("case pjm_type when 'short' then 1 when 'long' then 2 end")           
             ->where('nip_staff', '=', $request->nomor_induk)->where('pjm_status', '=', 4)
             ->orWhere('nim_mahasiswa', '=', $request->nomor_induk)->where('pjm_status', '=', 4)->get(); 
@@ -143,6 +145,14 @@ class PengembalianAlatController extends Controller
         }
 
         $peminjaman->save();
+
+        $dataLog = [
+            "peminjaman_id" => $peminjaman->id,
+            "action" => "RETURN",
+            "created_by" => Auth::user()->staff_user->staff_fullname,
+        ];
+
+        $log = LogPeminjaman::create($dataLog);
 
         if($peminjaman){
             return ResponseFormatter::success(null, 'Pengembalian Alat selesai dilakukan', 200);

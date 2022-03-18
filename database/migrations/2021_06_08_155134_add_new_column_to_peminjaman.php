@@ -16,7 +16,7 @@ class AddNewColumnToPeminjaman extends Migration
     public function up()
     {
         Schema::table('peminjaman', function (Blueprint $table) {
-            $table->date('created_date')->default(\Carbon\Carbon::now())->after('ruangan_id');
+            $table->date('created_date')->default(\Carbon\Carbon::now())->change();
         });
 
         Schema::table('detail_peminjaman', function (Blueprint $table) {

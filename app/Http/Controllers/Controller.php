@@ -9,10 +9,11 @@ use Illuminate\Routing\Controller as BaseController;
 
  /**
  * @OA\Info(
- *    version="1.0.0",
+ *    version="2.0.0",
  *    title="API Documentation for SMIL",
  *    description="Dokumentasi API untuk Sistem Manajemen Inventaris Lab TIK PNJ",
  *    @OA\Contact(
+ *      name="Muhammad Rafly Sadewa",
  *      email="muhammad.raflysadewa.tik17@mhsw.pnj.ac.id"
  *    ),
  *     

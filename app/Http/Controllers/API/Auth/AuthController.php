@@ -96,16 +96,15 @@ class AuthController extends Controller
      * @OA\Post(
      * path="/api/auth/login-peminjam",
      * summary="Login Peminjam",
-     * description="Login Peminjam by nip or nim, and password",
+     * description="Login Peminjam by email, and password",
      * operationId="authLoginPeminjam",
      * tags={"Authentication"},
      * @OA\RequestBody(
      *    required=true,
      *    description="Pass user credentials",
      *    @OA\JsonContent(
-     *       required={"password"},
-     *       @OA\Property(property="nip", type="string"),
-     *       @OA\Property(property="nim", type="string"),
+     *       required={"email","password"},
+     *       @OA\Property(property="email", type="string", format="email"),
      *       @OA\Property(property="password", type="string", format="password"),
      *    ),
      * ),
@@ -130,8 +129,7 @@ class AuthController extends Controller
     public function loginPeminjam(Request $request){
         
         $validasi = Validator::make($request->all(), [
-            "nip" => ["string", 'nullable'],
-            "nim" => ["string", 'nullable'],
+            "email" => ["required","email"],
             "password" => "required|string"
         ]);
 
@@ -143,7 +141,7 @@ class AuthController extends Controller
         auth()->factory()->setTTL($token_validity);
 
         if(!$token = auth()->attempt($validasi->validate())){
-            return ResponseFormatter::error(null, "Nomor Induk atau Password tidak sesuai, silahkan coba kembali", 403);
+            return ResponseFormatter::error(null, "Email atau Password tidak sesuai, silahkan coba kembali", 403);
         }
 
         if(Auth::user()->user_roles === 0){
@@ -221,7 +219,8 @@ class AuthController extends Controller
         }
 
         $user->update([
-            "password" => Hash::make($request->password),            
+            "password" => Hash::make($request->password),
+            "first_login" => false,            
         ]);
 
         return ResponseFormatter::success(null, 'Password berhasil diubah', 200);

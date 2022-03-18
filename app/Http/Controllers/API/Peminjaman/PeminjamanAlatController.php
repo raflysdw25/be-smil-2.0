@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\API\ResponseFormatter;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use App\Mail\UserVerification;
@@ -33,7 +35,7 @@ class PeminjamanAlatController extends Controller
 {
 
     public function __construct(){
-        $this->middleware(['auth', 'api', 'isPeminjam']);
+        $this->middleware(['auth:api', 'isPeminjam']);
     }
 
     /**
@@ -79,18 +81,22 @@ class PeminjamanAlatController extends Controller
         $sortDirection = $request->input('sort_direction', 'DESC');
 
         $validator = Validator::make($request->all(), [
-            "nomor_induk" => "required|string"
+            "nomor_induk" => "required|string",
+            "is_mahasiswa" => "required|boolean"
         ]);
 
         if($validator->fails()){
             return ResponseFormatter::error(null, $validator->errors(), 400);
         }
 
-        $recentPeminjaman = Peminjaman::with(['detail_peminjaman_model.barcode_alat_pinjam.alat_model', 'detail_peminjaman_model.alat_pinjam', 'mahasiswa_peminjam_model', 'staff_peminjam_model']) 
-            ->orderBy($sortBy, $sortDirection)
-            ->where('nip_staff', '=', $request->nomor_induk)
-            ->orWhere('nim_mahasiswa', '=', $request->nomor_induk);
+        $recentPeminjaman = Peminjaman::with(['detail_peminjaman_model.barcode_alat_pinjam.alat_model', 'detail_peminjaman_model.alat_pinjam', 'mahasiswa_peminjam_model', 'staff_peminjam_model'])            
+            ->orderBy($sortBy, $sortDirection);
         
+        if($request->is_mahasiswa == false){
+            $recentPeminjaman->where('nip_staff', '=', $request->nomor_induk);
+        }else{
+            $recentPeminjaman->where('nip_mahasiswa', '=', $request->nomor_induk);
+        }
 
         // Created At, Expected Return Date, Nomor Induk, Peminjaman Status
         if($request->has('created_date') && $request->created_date != null){
