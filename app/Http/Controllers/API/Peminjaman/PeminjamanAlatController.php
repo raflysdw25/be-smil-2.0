@@ -95,7 +95,7 @@ class PeminjamanAlatController extends Controller
         if($request->is_mahasiswa == false){
             $recentPeminjaman->where('nip_staff', '=', $request->nomor_induk);
         }else{
-            $recentPeminjaman->where('nip_mahasiswa', '=', $request->nomor_induk);
+            $recentPeminjaman->where('nim_mahasiswa', '=', $request->nomor_induk);
         }
 
         // Created At, Expected Return Date, Nomor Induk, Peminjaman Status

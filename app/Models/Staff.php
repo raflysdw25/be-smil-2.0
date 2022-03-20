@@ -37,4 +37,8 @@ class Staff extends Model
     public function peminjaman_staff(){
         return $this->hasMany(Peminjaman::class, 'nip_staff', 'nip');
     }
+
+    public function staff_as_user(){
+        return $this->hasOne(User::class, 'nip', 'nip');
+    }
 }

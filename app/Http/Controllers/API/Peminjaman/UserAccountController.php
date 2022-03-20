@@ -328,9 +328,14 @@ class UserAccountController extends Controller
                 ]);            
                 return ResponseFormatter::success($bookingPengembalian, 'Booking Pengembalian berhasil dibuat', 201);
             }else{
-                $bookingPengembalian = BookingPengembalian::find($request->booking_id);
-                $role = $request->is_mahasiswa == true ? 'Mahasiswa' : 'Staff Jurusan';
-                $fullname = $request->is_mahasiswa == true ? Auth::user()->mahasiswa_user->mahasiswa_fullname : Auth::user()->staff_user->staff_fullname;
+                $bookingPengembalian = BookingPengembalian::find($request->booking_id);                
+                if(Auth::user()->nip == null || Auth::user()->nip == ''){
+                    $role = 'Mahasiswa';
+                    $fullname = Auth::user()->mahasiswa_user->mahasiswa_fullname;
+                }else{
+                    $role = 'Staff Jurusan';
+                    $fullname = Auth::user()->staff_user->staff_fullname;
+                }
                 $process_by = $request->is_booking_cancel == true ? $fullname.' '.'('.$role.')'  : $bookingPengembalian->process_by;
                 $bookingPengembalian->update([
                     'appointment_date' => $request->appointment_date ,

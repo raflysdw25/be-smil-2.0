@@ -152,6 +152,10 @@ class AlatController extends Controller
             $canBorrowed = $request->can_borrowed == 1 ? true : false;
             $alat->where('can_borrowed', '=', $canBorrowed);
         }
+        if($request->has('habis_pakai') && $request->habis_pakai != null){
+            $habisPakai = $request->habis_pakai == 1 ? true : false;
+            $alat->where('habis_pakai', '=', $habisPakai);
+        }
         
         
         $listAlat = $alat->paginate($paginate);

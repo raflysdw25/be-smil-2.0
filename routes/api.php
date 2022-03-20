@@ -109,6 +109,12 @@ Route::group(['middleware' => ['api', 'isAdmin'],'prefix' => 'admin', 'namespace
 
     // Jabatan
     Route::get('jabatan/lab/staff-lab', 'JabatanController@getStaffJabatan')->name('jabatan.staff-lab');
+
+    // Setting User
+});
+
+Route::group(['prefix' => 'admin', 'namespace' => 'App\Http\Controllers\API\Admin'], function($router){
+    Route::get('set-user-staff', 'StaffController@setUserPeminjamStaff')->name('staff.set-user-staff');
 });
 
 

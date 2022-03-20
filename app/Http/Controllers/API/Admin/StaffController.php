@@ -33,7 +33,7 @@ class StaffController extends Controller
 
 
     public function __construct(){
-        $this->middleware('auth:api');
+        $this->middleware('auth:api', ['except' => 'setUserPeminjamStaff']);
     }
     /**
      * Display a listing of the resource.
@@ -311,6 +311,7 @@ class StaffController extends Controller
             }else{
                 return ResponseFormatter::error(null, 'Staff gagal ditambahkan');
             }
+            
         }else{
             return ResponseFormatter::error(null, 'Staff gagal ditambahkan');
         }
@@ -524,7 +525,7 @@ class StaffController extends Controller
             'staff_fullname' => 'required|string|max:255',
             'email' => 'required|email',
             'phone_number' => 'required|string',
-            'prodi_id' => 'integer'
+            'prodi_id' => 'integer|nullable'
         ]);
         
         if($validator->fails()){
@@ -605,8 +606,31 @@ class StaffController extends Controller
             }else{
                 return ResponseFormatter::error(null, $e->errorInfo[2], 403);
             }
+        }  
+    }
+
+    public function setUserPeminjamStaff()
+    {
+        $listStaff = Staff::with(['staff_as_user'])->get();
+        $listUser = [];
+        foreach ($listStaff as $staff) {
+            if($staff->staff_as_user()->exists()){                
+                $staff->staff_as_user->isNewUser = false;
+                array_push($listUser, $staff->staff_as_user);
+            }else{                
+                $user = User::create([
+                    "nip" => $staff->nip,
+                    "email" => $staff->email,
+                    "password" => bcrypt($staff->nip),                
+                    "is_verified" => true,
+                    'user_roles' => 2,
+                ]);
+                $user->isNewUser = true;
+                array_push($listUser, $user);
+            }
         }
 
-       
+        return ResponseFormatter::success($listUser, 'SET USER STAFF', 200);
+        
     }
 }
