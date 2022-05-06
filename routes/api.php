@@ -30,6 +30,7 @@ Route::group(['prefix' => 'auth', 'namespace' => 'App\Http\Controllers\API\Auth'
     // Auth
     Route::post('login', 'AuthController@login')->name('auth.login');
     Route::post('login-peminjam', 'AuthController@loginPeminjam')->name('auth.peminjam');
+    Route::put('set-default-password', 'AuthController@setDefaultPassword')->name('auth.set-default-password');
 
 });
 
@@ -135,6 +136,7 @@ Route::group(['middleware' => ['api', 'isPeminjam'], 'prefix' => 'peminjaman', '
     Route::post('/get-booking-pengembalian', 'UserAccountController@getBookingPengembalian')->name('peminjam.get-booking-pengembalian');
     Route::post('/submit-booking-pengembalian', 'UserAccountController@submitBookingPengembalian')->name('peminjam.submit-booking-pengembalian');
     Route::get('peminjam/get-image/{id}', 'UserAccountController@getImagePeminjam')->name('peminjam.get-image');
+    Route::post('/available-return-peminjaman', 'UserAccountController@getReadyReturnPeminjaman')->name('peminjam.available-return-peminjaman');
 
     // UNUSED ROUTE
     Route::post('/cek-pelapor', 'BuatLaporanController@confirmPeminjam')->name('peminjam.cek-pelapor');

@@ -627,4 +627,6 @@ class StaffLaboratoriumController extends Controller
             return ResponseFormatter::error(null, 'User gagal dihapus', 500);
         }
     }
+
+    
 }

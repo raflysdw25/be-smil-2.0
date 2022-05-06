@@ -41,7 +41,7 @@ class PeminjamanAlatController extends Controller
     /**
      * @OA\Post(
      *     path="/api/peminjaman/cek-peminjaman",
-     *     operationId="getDataPeminjaman",
+     *     operationId="getRecentPeminjaman",
      *     tags={"Peminjaman Alat - Peminjam"},
      *     summary="Check latest peminjaman",
      *     security={ {"bearerAuth": {} }},
@@ -249,7 +249,6 @@ class PeminjamanAlatController extends Controller
 
         return ResponseFormatter::success($data, 'Data Peminjam berhasil didapatkan', 200);        
     }
-
 
     /**
      * @OA\Post(

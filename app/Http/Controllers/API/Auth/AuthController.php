@@ -15,9 +15,10 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-
+    protected $isAuthorize;
     public function __construct(){
         $this->middleware('auth:api', ['except' => ['login', 'loginPeminjam']]);
+        $this->isAuthorize = Auth::user() && Auth::user()->user_roles != 2;
     }
 
     protected function guard(){
@@ -224,6 +225,36 @@ class AuthController extends Controller
         ]);
 
         return ResponseFormatter::success(null, 'Password berhasil diubah', 200);
+    }
+
+    public function setDefaultPassword(Request $request){
+        if(!$this->isAuthorize){
+            return ResponseFormatter::error(null, 'User Unauthorized to do this action', 403);
+        }
+        
+        $validasi = Validator::make($request->all() , [
+            "nomor_induk" => "required",
+            "is_mahasiswa" => "required"
+        ]);
+
+        if($validasi->fails()){
+            return ResponseFormatter::error(null, $validasi->error(), 400);
+        }
+
+        $user = null;
+        if($request->is_mahasiswa == true){
+            $user = User::where('nim', '=', $request->nomor_induk)->first();
+        }else{
+            $user = User::where('nip', '=', $request->nomor_induk)->first();
+        }
+
+        if($user == null){
+            return ResponseFormatter::error(null, 'Data tidak ditemukan', 404);
+        }
+        
+        $user->update(["password" => bcrypt($request->nomor_induk), "first_login" => true]);
+        
+        return ResponseFormatter::success(true, 'Password berhasil diubah', 200);
     }
 
     

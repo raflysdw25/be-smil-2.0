@@ -252,14 +252,27 @@ class UserAccountController extends Controller
     public function getReadyReturnPeminjaman(Request $request){
         $validator = Validator::make($request->all(), [
             "nomor_induk" => "required|string",
-            "is_mahasiswa" => "required|boolean",
-            "pjm_status" => "required|numeric"
+            "is_mahasiswa" => "required|boolean",            
         ]);
 
         if($validator->fails()){
             return ResponseFormatter::error(null, $validator->errors(), 400);
         }
 
+        $peminjaman;
+        if($request->is_mahasiswa == true){
+            $peminjaman = Peminjaman::where('nim_mahasiswa', '=', $request->nomor_induk);
+        }else{
+            $peminjaman = Peminjaman::where('nip_staff', '=', $request->nomor_induk);
+        }
+
+        $peminjaman->where('pjm_status', '=', 4);
+        $jumlah_data = $peminjaman->count();        
+        if($jumlah_data > 0){
+            return ResponseFormatter::success(true, 'Terdapat data peminjaman', 200);
+        }else{
+            return ResponseFormatter::success(false, 'Tidak terdapat data peminjaman', 200);
+        }
         
     }
 
